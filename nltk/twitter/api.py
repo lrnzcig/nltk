@@ -57,6 +57,9 @@ class BasicTweetHandler(object):
         a functional clause (e.g. date limit)"""
         self.do_stop = False
 
+        """ Stores the id of last fetched tweet to handle pagination """
+        self.max_id = None
+
     def do_continue(self):
         """
         Returns false if the client should stop fetching tweets
@@ -68,22 +71,27 @@ class TweetHandlerI(BasicTweetHandler):
     Interface class whose subclasses should implement a handle method that
     Twitter clients can delegate to.
     """
-    def __init__(self, limit=20, date_limit=None):
+    def __init__(self, limit=20, upper_date_limit=None, lower_date_limit=None):
         """
         :param int limit: The number of data items to process in the current round of\
         processing.
 
-        :param tuple date_limit: The date at which to stop collecting new\
+        :param tuple upper_date_limit: The date at which to stop collecting new\
         data. This should be entered as a tuple which can serve as the\
-        argument to `datetime.datetime`. E.g. `data_limit=(2015, 4, 1, 12,\
+        argument to `datetime.datetime`. E.g. `date_limit=(2015, 4, 1, 12,\
         40)` for 12:30 pm on April 1 2015.
 
+        :param tuple lower_date_limit: The date at which to stop collecting new\
+        data. See `upper_data_limit` for formatting. 
         """
         BasicTweetHandler.__init__(self, limit)
 
-        self.date_limit = date_limit
-        if date_limit is not None:
-            self.date_limit = datetime(*date_limit, tzinfo=LOCAL)
+        self.upper_date_limit = None
+        self.lower_date_limit = None
+        if upper_date_limit:
+            self.upper_date_limit = datetime(*upper_date_limit, tzinfo=LOCAL)
+        if lower_date_limit:
+            self.lower_date_limit = datetime(*lower_date_limit, tzinfo=LOCAL)
 
         self.startingup = True
 
@@ -98,4 +106,4 @@ class TweetHandlerI(BasicTweetHandler):
         Actions when the tweet limit has been reached
         """
         raise NotImplementedError
-        
+       
