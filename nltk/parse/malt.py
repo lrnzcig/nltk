@@ -2,6 +2,7 @@
 # Natural Language Toolkit: Interface to MaltParser
 #
 # Author: Dan Garrette <dhgarrette@gmail.com>
+# Contributor: Liling Tan, Mustufain, osamamukhtar11
 #
 # Copyright (C) 2001-2015 NLTK Project
 # URL: <http://nltk.org/>
@@ -9,15 +10,14 @@
 
 from __future__ import print_function
 from __future__ import unicode_literals
-from six import text_type
+from nltk.six import text_type
 
 import os
+import sys
 import tempfile
 import subprocess
 import inspect
 
-from nltk.tokenize import word_tokenize
-from nltk.tag import pos_tag
 from nltk.data import ZipFilePathPointer
 from nltk.internals import find_dir, find_file, find_jars_within_path
 
@@ -68,7 +68,7 @@ def find_maltparser(parser_dirname):
     # Checks that that the found directory contains all the necessary .jar
     malt_dependencies = ['','','']
     _malt_jars = set(find_jars_within_path(_malt_dir))
-    _jars = set(jar.rpartition('/')[2] for jar in _malt_jars)
+    _jars = set(os.path.split(jar)[1] for jar in _malt_jars)
     malt_dependencies = set(['log4j.jar', 'libsvm.jar', 'liblinear-1.8.jar'])
 
     assert malt_dependencies.issubset(_jars)
@@ -217,8 +217,10 @@ class MaltParser(ParserI):
         """
 
         cmd = ['java']
-        cmd+= self.additional_java_args # Adds additional java arguments.
-        cmd+= ['-cp', ':'.join(self.malt_jars)] # Adds classpaths for jars
+        cmd+= self.additional_java_args # Adds additional java arguments
+        # Joins classpaths with ";" if on Windows and on Linux/Mac use ":"
+        classpaths_separator = ';' if sys.platform.startswith('win') else ':'
+        cmd+= ['-cp', classpaths_separator.join(self.malt_jars)] # Adds classpaths for jars
         cmd+= ['org.maltparser.Malt'] # Adds the main function.
 
         # Adds the model file.
@@ -287,6 +289,7 @@ if __name__ == '__main__':
     '''
     A demostration function to show how NLTK users can use the malt parser API.
 
+    >>> from nltk import pos_tag
     >>> assert 'MALT_PARSER' in os.environ, str(
     ... "Please set MALT_PARSER in your global environment, e.g.:\n"
     ... "$ export MALT_PARSER='/home/user/maltparser-1.7.2/'")

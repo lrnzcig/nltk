@@ -34,6 +34,7 @@
 - Jinyoung Choi
 - Andrew Clausen
 - Lucas Champollion
+- Graham Christensen
 - Trevor Cohn
 - David Coles
 - Lucas Cooper
@@ -57,9 +58,11 @@
 - Jean Mark Gawron
 - Sumukh Ghodke
 - Yoav Goldberg
+- Michael Wayne Goodman
 - Dougal Graham
 - Brent Gray
 - Simon Greenhill
+- Clark Grubb
 - Eduardo Pereira Habkost
 - Masato Hagiwara
 - Lauri Hallila
@@ -125,17 +128,20 @@
 - Joel Nothman
 - Alireza Nourian
 - Alexander Oleynikov
+- Pierpaolo Pantone
 - Ted Pedersen
 - Jacob Perkins
 - Alberto Planas
 - Ondrej Platek
 - Alessandro Presta
 - Martin Thorsen Ranang
+- Michael Recachinas
 - Brandon Rhodes
 - Joshua Ritterman
 - Will Roberts
 - Stuart Robinson
 - Carlos Rodriguez
+- Lorenzo Rubio
 - Alex Rudnick
 - Jussi Salmela
 - Geoffrey Sampson
@@ -182,3 +188,6 @@
 - wvanlint
 - Álvaro Justen <https://github.com/turicas>
 - bjut-hz
+- Sergio Oller
+- Will Monroe
+- Elijah Rippeth

@@ -104,12 +104,12 @@ Translation: Parameter Estimation. Computational Linguistics, 19 (2),
 from __future__ import division
 from collections import defaultdict
 from math import factorial
-from nltk.align import AlignedSent
-from nltk.align import Alignment
-from nltk.align import IBMModel
-from nltk.align import IBMModel3
-from nltk.align.ibm_model import Counts
-from nltk.align.ibm_model import longest_target_sentence_length
+from nltk.translate import AlignedSent
+from nltk.translate import Alignment
+from nltk.translate import IBMModel
+from nltk.translate import IBMModel3
+from nltk.translate.ibm_model import Counts
+from nltk.translate.ibm_model import longest_target_sentence_length
 import warnings
 
 
@@ -261,7 +261,7 @@ class IBMModel4(IBMModel):
         if max_m <= 1:
             initial_prob = IBMModel.MIN_PROB
         else:
-            initial_prob = float(1) / (2 * (max_m - 1))
+            initial_prob = 1 / (2 * (max_m - 1))
         if initial_prob < IBMModel.MIN_PROB:
             warnings.warn("A target sentence is too long (" + str(max_m) +
                           " words). Results may be less accurate.")

@@ -11,7 +11,7 @@ from __future__ import print_function
 import subprocess
 import os
 import fnmatch
-import re, sre_constants, sre_parse, sre_compile
+import re
 import warnings
 import textwrap
 import types
@@ -27,34 +27,6 @@ except ImportError:
 
 from nltk import __file__
 from nltk import compat
-######################################################################
-# Regular Expression Processing
-######################################################################
-
-def compile_regexp_to_noncapturing(pattern, flags=0):
-    """
-    Compile the regexp pattern after switching all grouping parentheses
-    in the given regexp pattern to non-capturing groups.
-
-    :type pattern: str
-    :rtype: str
-    """
-    def convert_regexp_to_noncapturing_parsed(parsed_pattern):
-        res_data = []
-        for key, value in parsed_pattern.data:
-            if key == sre_constants.SUBPATTERN:
-                index, subpattern = value
-                value = (None, convert_regexp_to_noncapturing_parsed(subpattern))
-            elif key == sre_constants.GROUPREF:
-                raise ValueError('Regular expressions with back-references are not supported: {0}'.format(pattern))
-            res_data.append((key, value))
-        parsed_pattern.data = res_data
-        parsed_pattern.pattern.groups = 1
-        parsed_pattern.pattern.groupdict = {}
-        return parsed_pattern
-
-    return sre_compile.compile(convert_regexp_to_noncapturing_parsed(sre_parse.parse(pattern)), flags=flags)
-
 
 ##########################################################################
 # Java Via Command-Line
@@ -200,6 +172,31 @@ def read_str(s, start_position):
     given string, then return a tuple ``(val, end_position)``
     containing the value of the string literal and the position where
     it ends.  Otherwise, raise a ``ReadError``.
+
+    :param s: A string that will be checked to see if within which a 
+        Python string literal exists.
+    :type s: str
+    
+    :param start_position: The specified beginning position of the string ``s``
+        to begin regex matching.
+    :type start_position: int
+    
+    :return: A tuple containing the matched string literal evaluated as a 
+        string and the end position of the string literal.
+    :rtype: tuple(str, int)
+
+    :raise ReadError: If the ``_STRING_START_RE`` regex doesn't return a
+        match in ``s`` at ``start_position``, i.e., open quote. If the 
+        ``_STRING_END_RE`` regex doesn't return a match in ``s`` at the 
+        end of the first match, i.e., close quote.
+    :raise ValueError: If an invalid string (i.e., contains an invalid
+        escape sequence) is passed into the ``eval``.
+
+    :Example:
+    >>> from nltk.internals import read_str
+    >>> read_str('"Hello", World!', 0)
+    ('Hello', 7)
+
     """
     # Read the open quote, and any modifiers.
     m = _STRING_START_RE.match(s, start_position)
@@ -229,6 +226,27 @@ def read_int(s, start_position):
     string, then return a tuple ``(val, end_position)`` containing the
     value of the integer and the position where it ends.  Otherwise,
     raise a ``ReadError``.
+
+    :param s: A string that will be checked to see if within which a 
+        Python integer exists.
+    :type s: str
+    
+    :param start_position: The specified beginning position of the string ``s``
+        to begin regex matching.
+    :type start_position: int
+    
+    :return: A tuple containing the matched integer casted to an int,
+        and the end position of the int in ``s``.
+    :rtype: tuple(int, int)
+
+    :raise ReadError: If the ``_READ_INT_RE`` regex doesn't return a
+        match in ``s`` at ``start_position``.
+
+    :Example:
+    >>> from nltk.internals import read_int
+    >>> read_int('42 is the answer', 0)
+    (42, 2)
+    
     """
     m = _READ_INT_RE.match(s, start_position)
     if not m: raise ReadError('integer', start_position)
@@ -241,6 +259,27 @@ def read_number(s, start_position):
     given string, then return a tuple ``(val, end_position)``
     containing the value of the number and the position where it ends.
     Otherwise, raise a ``ReadError``.
+
+    :param s: A string that will be checked to see if within which a 
+        Python number exists.
+    :type s: str
+    
+    :param start_position: The specified beginning position of the string ``s``
+        to begin regex matching.
+    :type start_position: int
+    
+    :return: A tuple containing the matched number casted to a ``float``,
+        and the end position of the number in ``s``.
+    :rtype: tuple(float, int)
+
+    :raise ReadError: If the ``_READ_NUMBER_VALUE`` regex doesn't return a
+        match in ``s`` at ``start_position``.
+
+    :Example:
+    >>> from nltk.internals import read_number
+    >>> read_number('Pi is 3.14159', 6)
+    (3.14159, 13)
+    
     """
     m = _READ_NUMBER_VALUE.match(s, start_position)
     if not m or not (m.group(1) or m.group(2)):

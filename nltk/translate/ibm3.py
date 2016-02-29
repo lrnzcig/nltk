@@ -76,11 +76,11 @@ Translation: Parameter Estimation. Computational Linguistics, 19 (2),
 from __future__ import division
 from collections import defaultdict
 from math import factorial
-from nltk.align import AlignedSent
-from nltk.align import Alignment
-from nltk.align import IBMModel
-from nltk.align import IBMModel2
-from nltk.align.ibm_model import Counts
+from nltk.translate import AlignedSent
+from nltk.translate import Alignment
+from nltk.translate import IBMModel
+from nltk.translate import IBMModel2
+from nltk.translate.ibm_model import Counts
 import warnings
 
 
@@ -197,7 +197,7 @@ class IBMModel3(IBMModel):
             m = len(aligned_sentence.words)
             if (l, m) not in l_m_combinations:
                 l_m_combinations.add((l, m))
-                initial_prob = 1 / float(m)
+                initial_prob = 1 / m
                 if initial_prob < IBMModel.MIN_PROB:
                     warnings.warn("A target sentence is too long (" + str(m) +
                                   " words). Results may be less accurate.")
