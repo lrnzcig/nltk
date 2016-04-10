@@ -319,25 +319,22 @@ class Twitter(object):
         :param bool stream: If `True`, use the live public stream,\
         otherwise search past public Tweets
 
-        :param int limit: The number of data items to process in the current\
-        round of processing.
-
-        :param tuple date_limit: The date at which to stop collecting\
-        new data. This should be entered as a tuple which can serve as the\
-        argument to `datetime.datetime`.\
-        E.g. `date_limit=(2015, 4, 1, 12, 40)` for 12:30 pm on April 1 2015.
-        Note that, in the case of streaming, this is the maximum date, i.e.\
+        :param int limit: Number of Tweets to process
+        :param tuple date_limit: The date at which to stop collecting new\
+        data. This should be entered as a tuple which can serve as the\
+        argument to `datetime.datetime`. E.g. `data_limit=(2015, 4, 1, 12,\
+        40)` for 12:30 pm on April 1 2015.\
+        Note that, in the case of streaming, it is the maximum date, i.e.\
         a date in the future; if not, it is the minimum date, i.e. a date\
         in the past
 
         :param str lang: language
 
-        :param bool repeat: A flag to determine whether multiple files should\
-        be written. If `True`, the length of each file will be set by the\
-        value of `limit`. Use only if `to_screen` is `False`. See also
-        :py:func:`handle`.
+        :param bool repeat: flag to determine whether multiple files should be\
+        written. If `True`, the length of each file will be set by the value\
+        of `limit`. Use only if `to_screen` is `False`. See also :py:func:`handle`.
 
-        :param gzip_compress: if `True`, output files are compressed with gzip.
+        :param gzip_compress: if `True`, ouput files are compressed with gzip
         """
         if stream:
             upper_date_limit = date_limit
@@ -345,29 +342,11 @@ class Twitter(object):
         else:
             upper_date_limit = None
             lower_date_limit = date_limit
-
+            
         if to_screen:
-            handler = TweetViewer(limit=limit,
-                                  upper_date_limit=upper_date_limit,
+            handler = TweetViewer(limit=limit, upper_date_limit=upper_date_limit,
                                   lower_date_limit=lower_date_limit)
         else:
-            handler = TweetWriter(limit=limit,
-                                  upper_date_limit=upper_date_limit,
-                                  lower_date_limit=lower_date_limit, repeat=repeat,
-                                  gzip_compress=gzip_compress)
-
-
-
-        if to_screen:
-            handler = TweetViewer(limit=limit)
-        else:
-            if stream:
-                upper_date_limit = date_limit
-                lower_date_limit = None
-            else:
-                upper_date_limit = None
-                lower_date_limit = date_limit
-
             handler = TweetWriter(limit=limit, upper_date_limit=upper_date_limit,
                                   lower_date_limit=lower_date_limit, repeat=repeat,
                                   gzip_compress=gzip_compress)
@@ -419,10 +398,6 @@ class TweetWriter(TweetHandlerI):
                  fprefix='tweets', subdir='twitter-files', repeat=False,
                  gzip_compress=False):
         """
-        The difference between the upper and lower date limits depends on
-        whether Tweets are coming in an ascending date order (i.e. when
-        streaming) or descending date order (i.e. when searching past Tweets).
-
         :param int limit: number of data items to process in the current\
         round of processing.
 
@@ -432,8 +407,11 @@ class TweetWriter(TweetHandlerI):
         40)` for 12:30 pm on April 1 2015.
 
         :param tuple lower_date_limit: The date at which to stop collecting new\
-        data. See `upper_data_limit` for formatting.
-
+        data. See `upper_data_limit` for formatting. The difference between the\
+        upper and lower date limits depends on whether tweets are coming in an\
+        ascending date order (i.e. when streaming) or descending date order (i.e.\
+        when searching tweets).
+        
         :param str fprefix: The prefix to use in creating file names for Tweet\
         collections.
 
@@ -500,7 +478,7 @@ class TweetWriter(TweetHandlerI):
         self.check_date_limit(data)
         if self.do_stop:
             return
-
+        
         self.startingup = False
 
     def on_finish(self):
@@ -528,3 +506,4 @@ class TweetWriter(TweetHandlerI):
         self.fname = self.timestamped_file()
         self.startingup = True
         self.counter = 0
+
